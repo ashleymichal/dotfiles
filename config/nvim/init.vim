@@ -1,9 +1,6 @@
 " specify directory for plugins
 call plug#begin('~/.config/nvim/plugged')
 
-" Nord theme
-Plug 'arcticicestudio/nord-vim'
-
 " scratch buffer
 Plug 'mtth/scratch.vim'
 
@@ -27,11 +24,13 @@ Plug 'nvim-treesitter/nvim-treesitter'
 " telescope-fzf-native for improved sort performance
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
 
-" typescript code completion
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
 " seamless vim/tmux pane navigation
 Plug 'christoomey/vim-tmux-navigator'
+
+" Rust file detection, syntax highlighting, formatting, Syntastic integration,
+" etc. https://github.com/rust-lang/rust.vim
+Plug 'rust-lang/rust.vim'
+
 " initialize plugin system
 call plug#end()
 
@@ -56,7 +55,6 @@ set list                    " show tabs as >
 set listchars=tab:>-
 
 syntax on
-colorscheme nord
 
 let mapleader = ","
 
@@ -111,6 +109,7 @@ nnoremap <Leader>jq :%!jq<CR>
 " quick show current directory/project directory
 nnoremap <leader>dd :Lexplore %:p:h<CR>
 nnoremap <leader>da :Lexplore <CR>
+
 " easier nav in file explorer
 function! NetrwMapping()
     nmap <buffer> <esc> :Lexplore <CR>
@@ -125,21 +124,12 @@ augroup netrw_mapping
     autocmd filetype netrw call NetrwMapping()
 augroup END
 
+autocmd BufWritePre * RustFmt
 autocmd BufWritePre * :%s/\s\+$//e
-
-" code completion server for typescript
-let g:coc_global_extensions = ['coc-tsserver']
-
-" You have to remap <cr> to make it confirm completion.
-inoremap <expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
-" To make <cr> select the first completion item and confirm the completion when no item has been selected:
-inoremap <silent><expr> <cr> coc#pum#visible() ? coc#_select_confirm() : "\<C-g>u\<CR>"
-" Use <Tab> and <S-Tab> to navigate the completion list:
-inoremap <expr> <Tab> coc#pum#visible() ? coc#pum#next(1) : "\<Tab>"
-inoremap <expr> <S-Tab> coc#pum#visible() ? coc#pum#prev(1) : "\<S-Tab>"
 
 " scratch configuration
 let g:scratch_horizontal=0
 let g:scratch_height=80
 let g:scratch_persistence_file = '.scratch.vim'
 nnoremap <leader>s :Scratch <CR>
+
