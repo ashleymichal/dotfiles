@@ -1,6 +1,9 @@
 " specify directory for plugins
 call plug#begin('~/.config/nvim/plugged')
 
+" Conquer of Completion https://github.com/neoclide/coc.nvim
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
 " scratch buffer
 Plug 'mtth/scratch.vim'
 
@@ -31,6 +34,8 @@ Plug 'christoomey/vim-tmux-navigator'
 " etc. https://github.com/rust-lang/rust.vim
 Plug 'rust-lang/rust.vim'
 
+Plug 'vim-autoformat/vim-autoformat'
+
 " initialize plugin system
 call plug#end()
 
@@ -57,6 +62,49 @@ set listchars=tab:>-
 syntax on
 
 let mapleader = ","
+
+" CoC Settings (from
+" https://www.linuxfordevices.com/tutorials/linux/setup-coc-autocompletion-vim)
+" Use tab for trigger completion with characters ahead and navigate.
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Make <CR> to accept selected completion item or notify coc.nvim to format
+" <C-g>u breaks current undo, please make your own choice.
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+"Ultisnips Settings
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
+
+"coc-snippets Settings
+"inoremap <silent><expr> <TAB>
+"      \ coc#pum#visible() ? coc#_select_confirm() :
+"      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+"      \ CheckBackspace() ? "\<TAB>" :
+"      \ coc#refresh()
+"
+"function! CheckBackspace() abort
+"  let col = col('.') - 1
+"  return !col || getline('.')[col - 1]  =~# '\s'
+"endfunction
+"
+"let g:coc_snippet_next = '<tab>'
+" end tutorial configs
 
 " Find files using Telescope command-line sugar.
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
@@ -124,12 +172,16 @@ augroup netrw_mapping
     autocmd filetype netrw call NetrwMapping()
 augroup END
 
-autocmd BufWritePre * RustFmt
 autocmd BufWritePre * :%s/\s\+$//e
 
 " scratch configuration
 let g:scratch_horizontal=0
 let g:scratch_height=80
-let g:scratch_persistence_file = '.scratch.vim'
+let g:scratch_persistence_file = '.todo.vim'
 nnoremap <leader>s :Scratch <CR>
 
+" autoformat rust
+let g:rustfmt_autosave = 1
+
+" autoformatter
+let g:python3_host_prog="/usr/bin/python3"
